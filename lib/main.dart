@@ -162,6 +162,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               indicatorColor: Colors.purple,
               labelColor: Colors.purple,
               unselectedLabelColor: Colors.grey,
+              labelStyle: TextStyle(fontSize: 14), // 選択時のテキストサイズ
+              unselectedLabelStyle: TextStyle(fontSize: 12), // 未選択時のテキストサイズ
               tabs: [
                 Tab(text: "テキスト"),
                 Tab(text: "掲示板"),
@@ -185,29 +187,31 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined, size: 28,),
               label: 'ホーム',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today),
+              icon: Icon(Icons.calendar_today, size: 28,),
               label: '学習プラン',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.menu_book),
+              icon: Icon(Icons.menu_book, size: 28,),
               label: '講座一覧',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.book),
-              label: '教室情報',
+              icon: Icon(Icons.collections_bookmark_outlined, size: 28,),
+              label: '後で確認',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.person_outline, size: 28,),
               label: 'マイページ',
             ),
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.purple,
           unselectedItemColor: Colors.grey,
+          selectedLabelStyle: const TextStyle(fontSize: 10), // 選択時のテキストサイズ
+          unselectedLabelStyle: const TextStyle(fontSize: 10), // 未選択時のテキストサイズ
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
           backgroundColor: const Color(0xFFE8DFFA),  // フッターの背景色
