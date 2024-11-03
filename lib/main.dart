@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:tecmage/widgets/post_list.dart'; // 掲示板のウィジェットをインポート
+import 'package:firebase_core/firebase_core.dart'; // Firebaseをインポート
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestoreをインポート
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -32,6 +37,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   bool _isPlaying = false;
   int _selectedIndex = 0;
 
+  final TextEditingController _commentController = TextEditingController(); // コメント入力コントローラ
+
   @override
   void initState() {
     super.initState();
@@ -44,7 +51,36 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void dispose() {
     _controller.dispose();
+    _commentController.dispose(); // コメントコントローラを破棄
     super.dispose();
+  }
+
+  Future<void> _addComment(String content) async {
+    if (content.isNotEmpty) {
+      try {
+        await FirebaseFirestore.instance.collection('posts').add({
+          'content': content,
+          'timestamp': FieldValue.serverTimestamp(),
+          'author': '@匿名さん',
+          'likes': 0,
+          'dislikes': 0,
+        });
+        _commentController.clear();
+        FocusScope.of(context).unfocus(); // キーボードを閉じる
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('投稿が完了しました')),
+        );
+      } catch (error) {
+        print('投稿エラー: $error');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('投稿に失敗しました。ネットワークを確認してください。')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('内容を入力してください')),
+      );
+    }
   }
 
   String formatDuration(Duration duration) {
@@ -62,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // タブの数を指定
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -71,9 +107,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             padding: const EdgeInsets.only(left: 8),
             child: IconButton(
               icon: const Icon(
-                  Icons.list,
-                  color: Colors.black,
-                  size: 28
+                Icons.list,
+                color: Colors.black,
+                size: 28,
               ),
               onPressed: () {},
             ),
@@ -84,11 +120,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               Text(
                 "高校１年生  物理",
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 10
+                  color: Colors.black,
+                  fontSize: 10,
                 ),
               ),
-              SizedBox(height: 4,),
+              SizedBox(height: 4),
               Text(
                 "第１講   物体の位置、速度、加速度",
                 style: TextStyle(
@@ -129,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           _isPlaying ? Icons.pause : Icons.play_arrow,
                           color: Colors.white,
                         ),
-                        iconSize: 24, // アイコンのサイズを指定して高さを調整
+                        iconSize: 24,
                       ),
                       Expanded(
                         child: Slider(
@@ -148,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         "${formatDuration(_controller.value.position)} / ${formatDuration(_controller.value.duration)}",
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 12, // サイズを小さく設定
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -172,11 +208,44 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ],
             ),
             // タブごとの内容を表示
-            const Expanded(
+            Expanded(
               child: TabBarView(
                 children: [
-                  Center(child: Text("テキストの内容")),
-                  Center(child: Text("掲示板の内容")),
+                  Center(child: SingleChildScrollView(child: Image.asset('assets/images/text_sample.png'))),
+                  Column(
+                    children: [
+                      Expanded(child: PostList()), // 掲示板ウィジェット
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Colors.grey[200],
+                              child: const Icon(Icons.person, size: 24),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: TextField(
+                                controller: _commentController,
+                                decoration: const InputDecoration(
+                                  hintText: 'コメントする...',
+                                  border: OutlineInputBorder(),
+                                  hintStyle: TextStyle(fontSize: 12),
+                                ),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(Icons.send),
+                              color: Colors.blue,
+                              onPressed: () => _addComment(_commentController.text),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                   Center(child: Text("AIチャットの内容")),
                   Center(child: Text("メモの内容")),
                 ],
@@ -214,7 +283,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           unselectedLabelStyle: const TextStyle(fontSize: 10), // 未選択時のテキストサイズ
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: const Color(0xFFE8DFFA),  // フッターの背景色
+          backgroundColor: const Color(0xFFE8DFFA),
         ),
       ),
     );
