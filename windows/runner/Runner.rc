@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "tecmage" "\0"
+            VALUE "CompanyName", "techmageddon1stv2.com.example" "\0"
+            VALUE "FileDescription", "techmageddon_1st_v2" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "tecmage" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "tecmage.exe" "\0"
-            VALUE "ProductName", "tecmage" "\0"
+            VALUE "InternalName", "techmageddon_1st_v2" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 techmageddon1stv2.com.example. All rights reserved." "\0"
+            VALUE "OriginalFilename", "techmageddon_1st_v2.exe" "\0"
+            VALUE "ProductName", "techmageddon_1st_v2" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

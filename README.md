@@ -1,4 +1,4 @@
-# tecmage
+# techmageddon_1st_v2
 
 A new Flutter project.
 
